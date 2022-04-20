@@ -1,9 +1,10 @@
 
 
 from django.contrib.auth.models import User
-from django.http import request
+from django.http import request, HttpResponse
 
 from django.shortcuts import render
+from django.views import View
 
 from rest_framework import viewsets, status
 from rest_framework.authentication import TokenAuthentication
@@ -21,7 +22,12 @@ from api.serializers import MovieSerializer, RatingSerializer, UserSerializer
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (AllowAny,)
 
+class AnotherFirst(View):
+    def get(self, request):
+      return HttpResponse('Second here')
 
 class SearchUserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -85,7 +91,7 @@ class RatingViewSet(viewsets.ModelViewSet):
     queryset = Rating.objects.all()
     serializer_class = RatingSerializer
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     # def update(self, request, *args, **kwargs):
     #     response = {'message': 'you cant update rating like that'}
