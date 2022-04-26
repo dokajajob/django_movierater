@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Items, ItemNumber, Character, Author
+from .models import Items, ItemNumber, Character, Author, Movies
 
 
 class ItemNumberSerializer(serializers.ModelSerializer):
@@ -33,6 +33,11 @@ class ItemMiniSerializer(serializers.ModelSerializer):
     class Meta:
         model = Items
         fields = ['id', 'title']
+
+class MovieSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Movies
+        fields = ['name', 'rating']
 
 
 

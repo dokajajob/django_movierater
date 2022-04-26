@@ -32,4 +32,7 @@ class Author(models.Model):
     surname = models.CharField(max_length=30)
     items = models.ManyToManyField(Items, related_name='authors')
 
+class Movies(models.Model):
+    name = models.CharField(max_length=30)
+    rating = models.DecimalField(max_digits=9, decimal_places=2)
 

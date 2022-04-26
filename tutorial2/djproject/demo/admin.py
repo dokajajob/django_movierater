@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Items, ItemNumber, Character, Author
+from .models import Items, ItemNumber, Character, Author, Movies
 from .models import Items, ItemNumber, Author
 #from .character import Character
 
@@ -20,3 +20,5 @@ admin.site.register(ItemNumber)
 admin.site.register(Character)
 
 admin.site.register(Author)
+
+admin.site.register(Movies)

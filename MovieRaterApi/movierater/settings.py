@@ -17,6 +17,10 @@ from pathlib import Path
 import os
 from decouple import config
 from dj_database_url import parse as dburl
+from django.core.management.utils import get_random_secret_key
+import sys
+import dj_database_url
+
 
 mongoengine.connect(db='movieratortutorial', host='mongodb+srv://eddie:edie1718@cluster0.wccjn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', username='eddie', password='eddie1718')
 client = pymongo.MongoClient(f"mongodb+srv://eddie:edie1718@cluster0.wccjn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority",tlsCAFile=certifi.where())
@@ -31,13 +35,28 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 # SECRET_KEY = 'django-insecure-@uw4=+-sjm+1s7c)0et*%r13392-9@)5=)qa2-84(*wn)j9o=3'
+
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG')
+
+# SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", get_random_secret_key())
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.1.241']
+ALLOWED_HOSTS = [
+    '192.168.1.241',
+    'http://localhost:3030',
+    'os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")',
+    'https://movie-rater-8c64e.firebaseapp.com/',
+    'eddiel.pythonanywhere.com',
+]
+
+# ALLOWED_HOSTS = ['*']
+
+DEVELOPMENT_MODE = os.getenv("DEVELOPMENT_MODE", "False") == "True"
+
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
@@ -47,7 +66,16 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:19006",
     "http://localhost:19006",
     "http://192.168.1.223",
+
 ]
+
+CORS_ORIGIN_WHITELIST = (
+    "http://localhost:3030",
+    "https://movie-rater-8c64e.web.app",
+    "https://movie-rater-8c64e.firebaseapp.com/",
+
+)
+
 
 # CORS_ALLOW_ALL_ORIGINS = True
 
@@ -105,26 +133,46 @@ default_dburl = 'sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3')
 
 
 DATABASES = {
-    'default': config('DATABASE_URL', default=default_dburl, cast=dburl),
 
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
+   'default': config('DATABASE_URL', default=default_dburl, cast=dburl),
+
+
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+
+        ## For MongoDB
         #   'ENGINE': 'djongo',
         #   'NAME': 'movieratorapi',
         #   'HOST': 'mongodb+srv://dokaja:eddie1718@movieratorapi.xjdcz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
         #   'USER': 'eddie',
         #   'PASSWORD': 'eddie1718',
+    }
 
-    # }
 }
+
+# # For DigitalOcean ##
+#
+# if DEVELOPMENT_MODE is True:
+#     DATABASES = {
+#         "default": {
+#             "ENGINE": "django.db.backends.sqlite3",
+#             "NAME": os.path.join(BASE_DIR, "db.sqlite3"),
+#         }
+#     }
+# elif len(sys.argv) > 0 and sys.argv[1] != 'collectstatic':
+#     if os.getenv("DATABASE_URL", None) is None:
+#         raise Exception("DATABASE_URL environment variable not defined")
+#     DATABASES = {
+#         "default": dj_database_url.parse(os.environ.get("DATABASE_URL")),
+#     }
 
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators
 
 REST_FRAMEWORK = {
-    #'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.AllowAny',)
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.AllowAny',),
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework.authentication.TokenAuthentication',)
 }
@@ -171,6 +219,8 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field

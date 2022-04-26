@@ -6,9 +6,9 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .models import Items
+from .models import Items, Movies
 #from .serializers import ItemSerializer, ItemSerializerPrice
-from .serializers import ItemSerializer, ItemMiniSerializer
+from .serializers import ItemSerializer, ItemMiniSerializer, MovieSerializer
 
 
 class ItemViewSet(viewsets.ModelViewSet):
@@ -21,6 +21,11 @@ class ItemViewSet(viewsets.ModelViewSet):
         instance = self.get_object()
         serializer = ItemSerializer(instance)
         return Response(serializer.data)
+
+class MovieViewSet(viewsets.ModelViewSet):
+    serializer_class = MovieSerializer
+    queryset = Movies.objects.all()
+    authentication_classes = (TokenAuthentication,)
 
 
 
@@ -56,7 +61,7 @@ class ItemViewSet(viewsets.ModelViewSet):
 #
 #     return render(request, 'firstTemplate.html', {'items': items})
 
-# def second(request):
-#     return HttpResponse('Second here')
+def second(request):
+    return HttpResponse('Second here')
 
 
